@@ -6,10 +6,10 @@ import simplecombatmagic.SimpleCombatMagic;
 public class CombatMagic implements ICombatMagic {
 
 	/** Basic spell cooldown time in ticks. Default: 1800 (1.5 minutes) */
-	private final int BASIC_SPELL_COOLDOWN_TIME = 1800;
+	public static final int BASIC_SPELL_COOLDOWN_TIME = 1800;
 	
 	/** Ultimate spell cooldown time in ticks. Default: 3600 (3 minutes) */
-	private final int ULTIMATE_SPELL_COOLDOWN_TIME = 3600;
+	public static final int ULTIMATE_SPELL_COOLDOWN_TIME = 3600;
 	
 	private int basicCooldown = 0;
 	private int ultimateCooldown = 0;

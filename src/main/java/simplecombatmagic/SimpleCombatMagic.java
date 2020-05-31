@@ -14,6 +14,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import simplecombatmagic.capabilities.CombatMagic;
 import simplecombatmagic.capabilities.CombatMagicStorage;
 import simplecombatmagic.capabilities.ICombatMagic;
+import simplecombatmagic.network.MagicCapabilityNetwork;
 
 @Mod("simplecombatmagic")
 public class SimpleCombatMagic
@@ -28,17 +29,18 @@ public class SimpleCombatMagic
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 
-        MinecraftForge.EVENT_BUS.register(new SimpleCombatMagicEventBusHandler());
+        MinecraftForge.EVENT_BUS.register(new MagicEventBusHandler());
     }
 
     private void setup(final FMLCommonSetupEvent event){
-
+    	
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
     }
     
     private void doCommonStuff(final FMLCommonSetupEvent event) {
+    	MagicCapabilityNetwork.registerPackets();
     	CapabilityManager.INSTANCE.register(ICombatMagic.class, new CombatMagicStorage(), CombatMagic::new);
     }
 
