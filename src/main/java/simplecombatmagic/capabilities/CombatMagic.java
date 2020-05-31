@@ -2,6 +2,7 @@ package simplecombatmagic.capabilities;
 
 import net.minecraft.util.ResourceLocation;
 import simplecombatmagic.SimpleCombatMagic;
+import simplecombatmagic.magic.MagicSpecializationEnum;
 
 public class CombatMagic implements ICombatMagic {
 

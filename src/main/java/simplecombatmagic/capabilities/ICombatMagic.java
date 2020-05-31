@@ -1,5 +1,7 @@
 package simplecombatmagic.capabilities;
 
+import simplecombatmagic.magic.MagicSpecializationEnum;
+
 public interface ICombatMagic {
 	void resetBasicCooldown();
 	void setBasicCooldown(int value);

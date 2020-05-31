@@ -5,6 +5,7 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
+import simplecombatmagic.magic.MagicSpecializationEnum;
 
 public class CombatMagicStorage implements IStorage<ICombatMagic> {
 

@@ -1,4 +1,4 @@
-package simplecombatmagic.capabilities;
+package simplecombatmagic.magic;
 
 public enum MagicSpecializationEnum {
 	FIRE("fire"),
@@ -33,5 +33,15 @@ public enum MagicSpecializationEnum {
 	@Override
 	public String toString() {
 		return this.getName();
+	}
+	
+	/** For testing - returns next spec in order */
+	public static MagicSpecializationEnum cycle(MagicSpecializationEnum current) {
+		if(current == null)
+			return FIRE;
+		int index = current.ordinal() + 1;
+		if(index == MagicSpecializationEnum.values().length)
+			index = 0;
+		return MagicSpecializationEnum.values()[index];
 	}
 }
