@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[30,)"
+issueTrackerURL="https://github.com/OrderedChaos-Dev/SimpleCombatMagic/issues"
+
+[[mods]]
+	modId="simplecombatmagic"
+	version="${version}"
+	displayName="Simple Combat Magic"
+	displayURL="https://www.orderedchaos.dev/"
+	logoFile="scm.png"
+	authors="ordered_chaos_dev"
+	description='''
+
+	'''
+[[dependencies.simplecombatmagic]]
+    modId="forge"
+    mandatory=true
+    versionRange="[30,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.simplecombatmagic]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"
