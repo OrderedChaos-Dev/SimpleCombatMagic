@@ -58,4 +58,15 @@ public class MagicEventBusHandler {
 			});
 		});
 	}
+	
+	@SubscribeEvent
+	public void login(PlayerEvent.PlayerLoggedInEvent event) {
+		PlayerEntity player = event.getPlayer();
+		if(player.isServerWorld()) {
+			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
+				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
+				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
+			});
+		}
+	}
 }
