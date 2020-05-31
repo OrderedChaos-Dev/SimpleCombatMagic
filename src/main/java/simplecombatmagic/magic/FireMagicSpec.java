@@ -22,5 +22,4 @@ public class FireMagicSpec extends MagicSpec {
 	public void castUltimateSpell(PlayerEntity player) {
 		
 	}
-	
 }

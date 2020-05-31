@@ -4,9 +4,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.EggEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -64,6 +61,7 @@ public class MagicEventBusHandler {
 	public void interact(PlayerInteractEvent.RightClickBlock event) {
 		PlayerEntity player = event.getPlayer();
 		//for some reason using player.isServerWorld() still passes on client
+		//placeholder for now
 		if(event.getSide() == LogicalSide.SERVER && event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.OAK_PLANKS) {
 			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
 				MagicSpecializationEnum m = MagicSpecializationEnum.cycle(spec.getMagicSpec());
