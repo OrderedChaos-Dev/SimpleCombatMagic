@@ -1,5 +1,7 @@
 package simplecombatmagic.client;
 
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
@@ -13,6 +15,7 @@ import simplecombatmagic.capabilities.CombatMagicInstance;
 public class CombatMagicGuiOverlay extends AbstractGui {
 	
 	private final ResourceLocation background = new ResourceLocation(SimpleCombatMagic.MOD_ID, "textures/gui/overlay.png");
+	private final ResourceLocation missing = new ResourceLocation(SimpleCombatMagic.MOD_ID, "textures/gui/missing.png");
 	private final int iconSize = 22, texCDBarHeight = 3;
 	
 	@SubscribeEvent
@@ -29,6 +32,7 @@ public class CombatMagicGuiOverlay extends AbstractGui {
 					int texYOffset = (spec.getMagicSpec().ordinal() + 1) * iconSize;
 					this.blit(0, screenHeight - iconSize, 0, texYOffset, iconSize, iconSize); //render magic specialization icon
 					
+					//draw background, spec, and cooldown bars
 					for(int i = 0; i < spec.getSpells().length; i++) {
 						if(i != spec.getSelectedSpellIndex())
 							this.blit(((iconSize) * (i + 1)), screenHeight - iconSize, 0, 0, iconSize, iconSize);
@@ -45,6 +49,20 @@ public class CombatMagicGuiOverlay extends AbstractGui {
 							} else {
 								this.blit(((iconSize) * (i + 1)), cdHeight, 44, texCDBarHeight, iconSize, texCDBarHeight);
 							}
+						}
+					}
+					
+					//draw spell icons
+					for(int i = 0; i < spec.getSpells().length; i++) {
+						if(spec.getSpells()[i] != null) {
+							try {
+								if(mc.getResourceManager().getResource(spec.getSpells()[i].getIcon()) != null) {
+									mc.getTextureManager().bindTexture(spec.getSpells()[i].getIcon());
+								}
+							} catch (IOException e) {
+								mc.getTextureManager().bindTexture(missing);
+							}
+							this.blit(((iconSize) * (i + 1)), screenHeight - iconSize, 0, 0, iconSize, iconSize);
 						}
 					}
 				}

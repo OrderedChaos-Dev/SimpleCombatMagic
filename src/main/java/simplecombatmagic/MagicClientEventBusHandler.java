@@ -13,6 +13,7 @@ import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import simplecombatmagic.capabilities.CombatMagicInstance;
+import simplecombatmagic.magic.MagicSpell;
 import simplecombatmagic.network.MagicCapabilityNetwork;
 import simplecombatmagic.network.MagicCapabilityPacket;
 
@@ -37,6 +38,15 @@ public class MagicClientEventBusHandler {
 					int index = instance.getSelectedSpellIndex();
 					if(instance.getCurrentCooldownTimer(index) <= 0) {
 						instance.putOnCooldown(index);
+						int[] cooldowns = instance.getCooldowns();
+						MagicSpell[] spells = instance.getSpells();
+						for(int i = 0; i < cooldowns.length; i++) {
+							if(spells[i] != null) {
+								if(cooldowns[i] == spells[i].getCooldown()) {
+									spells[i].cast(player);
+								}
+							}
+						}
 						MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 						MagicCapabilityNetwork.NETWORK.sendToServer(packet);
 					} else {

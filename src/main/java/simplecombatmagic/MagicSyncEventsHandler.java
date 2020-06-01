@@ -23,7 +23,7 @@ import simplecombatmagic.magic.MagicSpells;
 import simplecombatmagic.network.MagicCapabilityNetwork;
 import simplecombatmagic.network.MagicCapabilityPacket;
 
-public class MagicEventBusHandler {
+public class MagicSyncEventsHandler {
 	
 	@SubscribeEvent
 	public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
@@ -38,7 +38,7 @@ public class MagicEventBusHandler {
 			if(event.phase == Phase.END && event.side == LogicalSide.SERVER) {
 				ServerPlayerEntity player = (ServerPlayerEntity) event.player;
 				
-				/** THIS PART HANDLES SPELL CASTING */
+				/** THIS PART HANDLES SPELL CASTING ON SERVER */
 				//basically, if the current cooldown == the spells cooldown, cast the spell
 				int[] cooldowns = instance.getCooldowns();
 				MagicSpell[] spells = instance.getSpells();
@@ -68,9 +68,9 @@ public class MagicEventBusHandler {
 				MagicSpecializationEnum m = MagicSpecializationEnum.cycle(instance.getMagicSpec());
 				instance.setMagicSpec(m);
 				instance.setSpellAtIndex(0, MagicSpells.FIREBALL);
-				instance.setSpellAtIndex(1, MagicSpells.FIREBALL);
-				instance.setSpellAtIndex(2, MagicSpells.FIREBALL);
-				instance.setSpellAtIndex(3, MagicSpells.FIREBALL);
+				instance.setSpellAtIndex(1, MagicSpells.SHARP_THORNS);
+				instance.setSpellAtIndex(2, MagicSpells.TRANSFUSION);
+				instance.setSpellAtIndex(3, MagicSpells.WILDFIRE);
 				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 			});
@@ -136,8 +136,8 @@ public class MagicEventBusHandler {
 		if(player.isServerWorld()) {
 			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
 				instance.resetCooldowns();
-				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
-				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
+//				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
+//				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 			});
 		}
 	}

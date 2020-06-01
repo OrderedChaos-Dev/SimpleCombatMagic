@@ -11,12 +11,12 @@ public abstract class MagicSpell {
 	private int cooldown;
 	private ResourceLocation icon;
 	
-	public MagicSpell(int id, String name, MagicSpecializationEnum spec, int cooldown) {
+	public MagicSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown) {
 		this.id = id;
 		this.name = name;
 		this.spec = spec;
 		this.cooldown = cooldown;
-		this.icon = new ResourceLocation(SimpleCombatMagic.MOD_ID, "textures/spells/" + name.toLowerCase() + ".png");
+		this.icon = new ResourceLocation(SimpleCombatMagic.MOD_ID, "textures/spells/" + resource_name + ".png");
 	}
 	
 	public abstract void cast(PlayerEntity player);
