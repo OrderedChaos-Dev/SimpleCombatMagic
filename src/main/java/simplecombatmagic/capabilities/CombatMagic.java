@@ -1,59 +1,108 @@
 package simplecombatmagic.capabilities;
 
+import java.util.ArrayList;
+
 import net.minecraft.util.ResourceLocation;
 import simplecombatmagic.SimpleCombatMagic;
+import simplecombatmagic.magic.MagicSpell;
 import simplecombatmagic.magic.MagicSpecializationEnum;
 
 public class CombatMagic implements ICombatMagic {
-
-	/** Basic spell cooldown time in ticks. Default: 1800 (1.5 minutes) */
-	public static final int BASIC_SPELL_COOLDOWN_TIME = 1800;
 	
-	/** Ultimate spell cooldown time in ticks. Default: 3600 (3 minutes) */
-	public static final int ULTIMATE_SPELL_COOLDOWN_TIME = 3600;
-	
-	private int basicCooldown = 0;
-	private int ultimateCooldown = 0;
+	private ArrayList<MagicSpell> spellbook = new ArrayList<MagicSpell>();
+	private MagicSpell[] spells = new MagicSpell[4];
+	private int[] cooldowns = new int[4];
 	private MagicSpecializationEnum spec = null;
+	private int selectedSpellIndex = 0;
 	
 	public static final ResourceLocation COMBAT_MAGIC_RESOURCE = new ResourceLocation(SimpleCombatMagic.MOD_ID, "magic_spec");
- 
+
 	@Override
-	public void resetBasicCooldown() {
-		this.basicCooldown = 0;
+	public ArrayList<MagicSpell> getSpellbook() {
+		return this.spellbook;
 	}
 
 	@Override
-	public void setBasicCooldown(int value) {
-		this.basicCooldown = value;
+	public void addSpell(MagicSpell spell) {
+		if(!this.spellbook.contains(spell))
+			this.spellbook.add(spell);
+	}
+	
+	@Override
+	public void setSpellAtIndex(int index, MagicSpell spell) {
+		spells[index] = spell;
 	}
 
 	@Override
-	public int getBasicCooldown() {
-		return this.basicCooldown;
+	public MagicSpell[] getSpells() {
+		return this.spells;
 	}
 
 	@Override
-	public void resetUltimateCooldown() {
-		this.ultimateCooldown = 0;
+	public int getSelectedSpellIndex() {
+		return this.selectedSpellIndex;
+	}
+	
+	@Override
+	public void setSelectedSpellIndex(int index) {
+		this.selectedSpellIndex = index;
 	}
 
 	@Override
-	public void setUltimateCooldown(int value) {
-		this.ultimateCooldown = value;
+	public void cycleSpellIndex() {	
+		int spellLength = 0;
+		for(MagicSpell spell : this.spells) {
+			if(spell != null) {
+				spellLength++;
+			}
+		}
+		if(spellLength <= 1) return;
+		
+		if(this.selectedSpellIndex + 1 >= spellLength) {
+			this.selectedSpellIndex = 0;
+		} else {
+			this.selectedSpellIndex++;
+		}
+	}
+	
+	@Override
+	public int[] getCooldowns() {
+		return this.cooldowns;
+	}
+	
+	@Override
+	public void setCooldown(int spellIndex, int time) {
+		this.cooldowns[spellIndex] = time;
+	}
+	
+	@Override
+	public void resetSpellIndex() {
+		this.selectedSpellIndex = 0;
 	}
 
 	@Override
-	public int getUltimateCooldown() {
-		return this.ultimateCooldown;
+	public int getCurrentCooldownTimer(int spellIndex) {
+		return this.cooldowns[spellIndex];
+	}
+
+	@Override
+	public void putOnCooldown(int spellIndex) {
+		if(this.spells[spellIndex] != null)
+			this.cooldowns[spellIndex] = this.spells[spellIndex].getCooldown();
+	}
+
+	@Override
+	public void resetCooldowns() {
+		for(int i = 0; i < this.cooldowns.length; i++) {
+			this.cooldowns[i] = 0;
+		}
 	}
 	
 	@Override
 	public void tickCooldowns() {
-		if(this.basicCooldown > 0)
-			this.basicCooldown--;
-		if(this.ultimateCooldown > 0)
-			this.ultimateCooldown--;
+		for(int i = 0; i < this.cooldowns.length; i++) {
+			this.cooldowns[i] = Math.max(0, this.cooldowns[i] - 1);
+		}
 	}
 
 	@Override

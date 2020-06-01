@@ -2,11 +2,15 @@ package simplecombatmagic.network;
 
 import static simplecombatmagic.SimpleCombatMagic.MOD_ID;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import simplecombatmagic.capabilities.ICombatMagic;
+import simplecombatmagic.magic.MagicSpell;
 
 public class MagicCapabilityNetwork {
 	
@@ -31,12 +35,24 @@ public class MagicCapabilityNetwork {
 	 * Helper method to reduce clutter
 	 */
 	public static MagicCapabilityPacket createPacket(ICombatMagic spec) {
-		CompoundNBT nbt = new CompoundNBT();
+		CompoundNBT tag = new CompoundNBT();
+		tag.putIntArray("cooldowns", spec.getCooldowns());
+		tag.putInt("selectedIndex", spec.getSelectedSpellIndex());
+		
+		ArrayList<MagicSpell> spellbook = spec.getSpellbook();
+		int[] spellbookIDs = spellbook.stream().mapToInt(spell -> spell.getID()).toArray();
+		tag.putIntArray("spellbook", spellbookIDs);
+		
+		int[] spellsIDs = Arrays.stream(spec.getSpells()).mapToInt(spell -> {
+			if(spell != null)
+				return spell.getID();
+			return 0;
+		}).toArray();
+		tag.putIntArray("spells", spellsIDs);
+		
 		if(spec.getMagicSpec() != null)
-			nbt.putString("magicSpec", spec.getMagicSpec().getName());
-		nbt.putInt("basicCooldown", spec.getBasicCooldown());
-		nbt.putInt("ultimateCooldown", spec.getUltimateCooldown());
-		MagicCapabilityPacket packet = new MagicCapabilityPacket(nbt);
+			tag.putString("magicSpec", spec.getMagicSpec().getName());
+		MagicCapabilityPacket packet = new MagicCapabilityPacket(tag);
 		return packet;
 	}
 }

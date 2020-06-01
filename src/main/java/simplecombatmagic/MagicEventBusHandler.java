@@ -1,10 +1,11 @@
 package simplecombatmagic;
 
+import java.util.ArrayList;
+
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -15,8 +16,9 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.PacketDistributor;
 import simplecombatmagic.capabilities.CombatMagic;
 import simplecombatmagic.capabilities.CombatMagicInstance;
-import simplecombatmagic.magic.MagicSpec;
 import simplecombatmagic.magic.MagicSpecializationEnum;
+import simplecombatmagic.magic.MagicSpell;
+import simplecombatmagic.magic.MagicSpells;
 import simplecombatmagic.network.MagicCapabilityNetwork;
 import simplecombatmagic.network.MagicCapabilityPacket;
 
@@ -35,24 +37,22 @@ public class MagicEventBusHandler {
 			if(event.phase == Phase.END && event.side == LogicalSide.SERVER) {
 				ServerPlayerEntity player = (ServerPlayerEntity) event.player;
 				
-				/** THIS PART HANDLES SPELL FUNCTIONS */
-				if(spec.getMagicSpec() != null) {
-					if(spec.getBasicCooldown() == CombatMagic.BASIC_SPELL_COOLDOWN_TIME) {
-						MagicSpec.fromSpecEnum(spec.getMagicSpec()).castBasicSpell(player);
-					} else if(spec.getUltimateCooldown() == CombatMagic.ULTIMATE_SPELL_COOLDOWN_TIME) {
-						MagicSpec.fromSpecEnum(spec.getMagicSpec()).castUltimateSpell(player);
+				/** THIS PART HANDLES SPELL CASTING */
+				//basically, if the current cooldown == the spells cooldown, cast the spell
+				int[] cooldowns = spec.getCooldowns();
+				MagicSpell[] spells = spec.getSpells();
+				for(int i = 0; i < cooldowns.length; i++) {
+					if(spells[i] != null) {
+						if(cooldowns[i] == spells[i].getCooldown()) {
+							spells[i].cast(player);
+						}
 					}
 				}
 				/**								   	*/
 				
-				spec.tickCooldowns();
+				spec.tickCooldowns(); //decrement cooldown timers
 				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> player), packet);
-				if(event.player.getEntityWorld().getGameTime() % 20 == 0) {
-					int basicCD = spec.getBasicCooldown() / 20;
-					int ultCD = spec.getUltimateCooldown() / 20;
-					event.player.sendMessage(new StringTextComponent("Cooldowns: " + basicCD + " | " + ultCD));
-				}
 			}
 		});
 	}
@@ -66,30 +66,57 @@ public class MagicEventBusHandler {
 			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
 				MagicSpecializationEnum m = MagicSpecializationEnum.cycle(spec.getMagicSpec());
 				spec.setMagicSpec(m);
-				player.sendMessage(new StringTextComponent("Spec: " + spec.getMagicSpec().getName()));
+				spec.setSpellAtIndex(0, MagicSpells.FIREBALL);
+				spec.setSpellAtIndex(1, MagicSpells.FIREBALL);
+				spec.setSpellAtIndex(2, MagicSpells.FIREBALL);
+				spec.setSpellAtIndex(3, MagicSpells.FIREBALL);
 				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 			});
 		}
 	}
 	
+	//capability data are not saved on death, so need to copy over
 	@SubscribeEvent
 	public void clone(PlayerEvent.Clone event) {
-		PlayerEntity player = event.getPlayer();
-		event.getOriginal().getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(oldSpec -> {
-			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-				if(oldSpec.getMagicSpec() != null)
+		if(event.isWasDeath()) {
+			PlayerEntity player = event.getPlayer();
+			event.getOriginal().getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(oldSpec -> {
+				player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
+					
+					//COOLDOWNS
+					for(int i = 0; i < oldSpec.getCooldowns().length; i++) {
+						spec.setCooldown(i, oldSpec.getCurrentCooldownTimer(i));
+					}
+					
+					//SPEC
 					spec.setMagicSpec(oldSpec.getMagicSpec());
-				spec.setBasicCooldown(oldSpec.getBasicCooldown());
-				spec.setUltimateCooldown(oldSpec.getUltimateCooldown());
-				if(player.isServerWorld()) {
-					MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
-					MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
-				}
+					
+					//SELECTED SPELL
+					spec.resetSpellIndex();
+					
+					//SPELLBOOK
+					ArrayList<MagicSpell> spellbook = oldSpec.getSpellbook();
+					for(MagicSpell spell : spellbook) {
+						spec.addSpell(spell);
+					}
+					
+					//SELECTED SPELLS
+					MagicSpell[] spells = oldSpec.getSpells();
+					for(int i = 0; i < spells.length; i++) {
+						spec.setSpellAtIndex(i, spells[i]);
+					}
+					
+					MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(oldSpec);
+					if(player.isServerWorld()) {
+						MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
+					}
+				});
 			});
-		});
+		}
 	}
 	
+	//sync to client on log in
 	@SubscribeEvent
 	public void login(PlayerEvent.PlayerLoggedInEvent event) {
 		PlayerEntity player = event.getPlayer();
