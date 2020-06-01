@@ -22,7 +22,7 @@ public class CombatMagicGuiOverlay extends AbstractGui {
 			final int screenHeight = mc.getMainWindow().getScaledHeight();
 //			final int screenWidth = mc.currentScreen.width;
 			ClientPlayerEntity player = mc.player;
-			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
+			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(spec -> {
 				if(spec.getMagicSpec() != null) {
 					mc.getTextureManager().bindTexture(background);
 					this.blit(0, screenHeight - iconSize, 0, 0, iconSize, iconSize); //render background

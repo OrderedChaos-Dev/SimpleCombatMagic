@@ -11,6 +11,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -33,14 +34,14 @@ public class MagicEventBusHandler {
 	
 	@SubscribeEvent
 	public void playerTick(TickEvent.PlayerTickEvent event) {
-		event.player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
+		event.player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
 			if(event.phase == Phase.END && event.side == LogicalSide.SERVER) {
 				ServerPlayerEntity player = (ServerPlayerEntity) event.player;
 				
 				/** THIS PART HANDLES SPELL CASTING */
 				//basically, if the current cooldown == the spells cooldown, cast the spell
-				int[] cooldowns = spec.getCooldowns();
-				MagicSpell[] spells = spec.getSpells();
+				int[] cooldowns = instance.getCooldowns();
+				MagicSpell[] spells = instance.getSpells();
 				for(int i = 0; i < cooldowns.length; i++) {
 					if(spells[i] != null) {
 						if(cooldowns[i] == spells[i].getCooldown()) {
@@ -50,8 +51,8 @@ public class MagicEventBusHandler {
 				}
 				/**								   	*/
 				
-				spec.tickCooldowns(); //decrement cooldown timers
-				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
+				instance.tickCooldowns(); //decrement cooldown timers
+				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> player), packet);
 			}
 		});
@@ -63,14 +64,14 @@ public class MagicEventBusHandler {
 		//for some reason using player.isServerWorld() still passes on client
 		//placeholder for now
 		if(event.getSide() == LogicalSide.SERVER && event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.OAK_PLANKS) {
-			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-				MagicSpecializationEnum m = MagicSpecializationEnum.cycle(spec.getMagicSpec());
-				spec.setMagicSpec(m);
-				spec.setSpellAtIndex(0, MagicSpells.FIREBALL);
-				spec.setSpellAtIndex(1, MagicSpells.FIREBALL);
-				spec.setSpellAtIndex(2, MagicSpells.FIREBALL);
-				spec.setSpellAtIndex(3, MagicSpells.FIREBALL);
-				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
+			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+				MagicSpecializationEnum m = MagicSpecializationEnum.cycle(instance.getMagicSpec());
+				instance.setMagicSpec(m);
+				instance.setSpellAtIndex(0, MagicSpells.FIREBALL);
+				instance.setSpellAtIndex(1, MagicSpells.FIREBALL);
+				instance.setSpellAtIndex(2, MagicSpells.FIREBALL);
+				instance.setSpellAtIndex(3, MagicSpells.FIREBALL);
+				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 			});
 		}
@@ -81,33 +82,33 @@ public class MagicEventBusHandler {
 	public void clone(PlayerEvent.Clone event) {
 		if(event.isWasDeath()) {
 			PlayerEntity player = event.getPlayer();
-			event.getOriginal().getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(oldSpec -> {
-				player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
+			event.getOriginal().getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(oldInstance -> {
+				player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(newInstance -> {
 					
 					//COOLDOWNS
-					for(int i = 0; i < oldSpec.getCooldowns().length; i++) {
-						spec.setCooldown(i, oldSpec.getCurrentCooldownTimer(i));
+					for(int i = 0; i < oldInstance.getCooldowns().length; i++) {
+						newInstance.setCooldown(i, oldInstance.getCurrentCooldownTimer(i));
 					}
 					
 					//SPEC
-					spec.setMagicSpec(oldSpec.getMagicSpec());
+					newInstance.setMagicSpec(oldInstance.getMagicSpec());
 					
 					//SELECTED SPELL
-					spec.resetSpellIndex();
+					newInstance.resetSpellIndex();
 					
 					//SPELLBOOK
-					ArrayList<MagicSpell> spellbook = oldSpec.getSpellbook();
+					ArrayList<MagicSpell> spellbook = oldInstance.getSpellbook();
 					for(MagicSpell spell : spellbook) {
-						spec.addSpell(spell);
+						newInstance.addSpell(spell);
 					}
 					
 					//SELECTED SPELLS
-					MagicSpell[] spells = oldSpec.getSpells();
+					MagicSpell[] spells = oldInstance.getSpells();
 					for(int i = 0; i < spells.length; i++) {
-						spec.setSpellAtIndex(i, spells[i]);
+						newInstance.setSpellAtIndex(i, spells[i]);
 					}
 					
-					MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(oldSpec);
+					MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(oldInstance);
 					if(player.isServerWorld()) {
 						MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 					}
@@ -121,8 +122,21 @@ public class MagicEventBusHandler {
 	public void login(PlayerEvent.PlayerLoggedInEvent event) {
 		PlayerEntity player = event.getPlayer();
 		if(player.isServerWorld()) {
-			player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
+			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
+				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
+			});
+		}
+	}
+	
+	//sleeping resets cooldowns
+	@SubscribeEvent
+	public void wakeup(PlayerWakeUpEvent event) {
+		PlayerEntity player = event.getPlayer();
+		if(player.isServerWorld()) {
+			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+				instance.resetCooldowns();
+				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 			});
 		}

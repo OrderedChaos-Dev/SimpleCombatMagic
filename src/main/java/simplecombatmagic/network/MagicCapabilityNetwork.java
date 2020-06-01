@@ -34,24 +34,24 @@ public class MagicCapabilityNetwork {
 	/**
 	 * Helper method to reduce clutter
 	 */
-	public static MagicCapabilityPacket createPacket(ICombatMagic spec) {
+	public static MagicCapabilityPacket createPacket(ICombatMagic instance) {
 		CompoundNBT tag = new CompoundNBT();
-		tag.putIntArray("cooldowns", spec.getCooldowns());
-		tag.putInt("selectedIndex", spec.getSelectedSpellIndex());
+		tag.putIntArray("cooldowns", instance.getCooldowns());
+		tag.putInt("selectedIndex", instance.getSelectedSpellIndex());
 		
-		ArrayList<MagicSpell> spellbook = spec.getSpellbook();
+		ArrayList<MagicSpell> spellbook = instance.getSpellbook();
 		int[] spellbookIDs = spellbook.stream().mapToInt(spell -> spell.getID()).toArray();
 		tag.putIntArray("spellbook", spellbookIDs);
 		
-		int[] spellsIDs = Arrays.stream(spec.getSpells()).mapToInt(spell -> {
+		int[] spellsIDs = Arrays.stream(instance.getSpells()).mapToInt(spell -> {
 			if(spell != null)
 				return spell.getID();
 			return 0;
 		}).toArray();
 		tag.putIntArray("spells", spellsIDs);
 		
-		if(spec.getMagicSpec() != null)
-			tag.putString("magicSpec", spec.getMagicSpec().getName());
+		if(instance.getMagicSpec() != null)
+			tag.putString("magicSpec", instance.getMagicSpec().getName());
 		MagicCapabilityPacket packet = new MagicCapabilityPacket(tag);
 		return packet;
 	}

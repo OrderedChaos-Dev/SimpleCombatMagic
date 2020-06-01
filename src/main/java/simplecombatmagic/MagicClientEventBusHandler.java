@@ -27,17 +27,17 @@ public class MagicClientEventBusHandler {
 		if(event.phase == Phase.END) {
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if(CYCLE_SPELL_KEY.isPressed()) { //cycle through spells
-				player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-					spec.cycleSpellIndex();
-					MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
+				player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+					instance.cycleSpellIndex();
+					MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 					MagicCapabilityNetwork.NETWORK.sendToServer(packet);
 				});
 			} else if(CAST_SPELL_KEY.isPressed()) { //casts currently selected spell
-				player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-					int index = spec.getSelectedSpellIndex();
-					if(spec.getCurrentCooldownTimer(index) <= 0) {
-						spec.putOnCooldown(index);
-						MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(spec);
+				player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+					int index = instance.getSelectedSpellIndex();
+					if(instance.getCurrentCooldownTimer(index) <= 0) {
+						instance.putOnCooldown(index);
+						MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 						MagicCapabilityNetwork.NETWORK.sendToServer(packet);
 					} else {
 						//TODO: play failure to cast spell soundfx

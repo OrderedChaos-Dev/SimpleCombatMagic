@@ -30,17 +30,17 @@ public class MagicCapabilityPacket {
 	
 	public void handle(Supplier<NetworkEvent.Context> ctx) {
 		NetworkEvent.Context context = ctx.get();
-		Capability.IStorage<ICombatMagic> storage = CombatMagicInstance.MAGIC_SPEC.getStorage();
+		Capability.IStorage<ICombatMagic> storage = CombatMagicInstance.COMBAT_MAGIC.getStorage();
 		context.enqueueWork(() -> {
 			if(context.getDirection().getOriginationSide().isServer()) { //SERVER TO CLIENT
 				ClientPlayerEntity player = Minecraft.getInstance().player;
-				player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-					storage.readNBT(CombatMagicInstance.MAGIC_SPEC, spec, null, nbt);
+				player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+					storage.readNBT(CombatMagicInstance.COMBAT_MAGIC, instance, null, nbt);
 				});
 			} else if(context.getDirection().getOriginationSide().isClient()) { //CLIENT TO SERVER
 				ServerPlayerEntity player = context.getSender();
-				player.getCapability(CombatMagicInstance.MAGIC_SPEC).ifPresent(spec -> {
-					storage.readNBT(CombatMagicInstance.MAGIC_SPEC, spec, null, nbt);
+				player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+					storage.readNBT(CombatMagicInstance.COMBAT_MAGIC, instance, null, nbt);
 				});
 			}
 		});

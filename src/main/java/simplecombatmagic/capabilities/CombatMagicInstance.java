@@ -9,24 +9,24 @@ import net.minecraftforge.common.util.LazyOptional;
 
 public class CombatMagicInstance implements ICapabilitySerializable<CompoundNBT>{
 	@CapabilityInject(ICombatMagic.class)
-	public static final Capability<ICombatMagic> MAGIC_SPEC = null;
+	public static final Capability<ICombatMagic> COMBAT_MAGIC = null;
 	
-	private LazyOptional<ICombatMagic> instance = LazyOptional.of(MAGIC_SPEC::getDefaultInstance);
+	private LazyOptional<ICombatMagic> instance = LazyOptional.of(COMBAT_MAGIC::getDefaultInstance);
 
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-		return MAGIC_SPEC.orEmpty(cap, instance);
+		return COMBAT_MAGIC.orEmpty(cap, instance);
 	}
 
 	@Override
 	public CompoundNBT serializeNBT() {
-		return (CompoundNBT) MAGIC_SPEC.getStorage().writeNBT(MAGIC_SPEC, this.instance.orElseThrow(() ->
+		return (CompoundNBT) COMBAT_MAGIC.getStorage().writeNBT(COMBAT_MAGIC, this.instance.orElseThrow(() ->
 					new IllegalArgumentException("This shouldn't happen")), null);
 	}
 
 	@Override
 	public void deserializeNBT(CompoundNBT nbt) {
-		MAGIC_SPEC.getStorage().readNBT(MAGIC_SPEC, this.instance.orElseThrow(() ->
+		COMBAT_MAGIC.getStorage().readNBT(COMBAT_MAGIC, this.instance.orElseThrow(() ->
 					new IllegalArgumentException("This shouldn't happen")), null, nbt);
 	}
 }

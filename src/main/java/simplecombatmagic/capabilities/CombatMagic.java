@@ -15,7 +15,7 @@ public class CombatMagic implements ICombatMagic {
 	private MagicSpecializationEnum spec = null;
 	private int selectedSpellIndex = 0;
 	
-	public static final ResourceLocation COMBAT_MAGIC_RESOURCE = new ResourceLocation(SimpleCombatMagic.MOD_ID, "magic_spec");
+	public static final ResourceLocation COMBAT_MAGIC_RESOURCE = new ResourceLocation(SimpleCombatMagic.MOD_ID, "combat_magic");
 
 	@Override
 	public ArrayList<MagicSpell> getSpellbook() {
