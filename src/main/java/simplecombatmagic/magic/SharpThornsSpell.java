@@ -6,8 +6,8 @@ import simplecombatmagic.effect.MagicEffects;
 
 public class SharpThornsSpell extends MagicSpell {
 
-	public SharpThornsSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown) {
-		super(id, name, resource_name, spec, cooldown);
+	public SharpThornsSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown, boolean requiresTarget) {
+		super(id, name, resource_name, spec, cooldown, requiresTarget);
 	}
 
 	@Override
@@ -18,6 +18,6 @@ public class SharpThornsSpell extends MagicSpell {
 
 	@Override
 	public String setDescription() {
-		return "Steals 1 heart of health from the target.";
+		return "Empowers your next 3 attacks to cause the target to bleed over time. This effect stacks.";
 	}
 }

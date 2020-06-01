@@ -1,7 +1,5 @@
 package simplecombatmagic.client;
 
-import java.io.IOException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
@@ -20,30 +18,29 @@ public class CombatMagicGuiOverlay extends AbstractGui {
 	
 	@SubscribeEvent
 	public void renderScreen(RenderGameOverlayEvent event) {
-		if(event.getType() == ElementType.TEXT) {
+		if(event.getType() == ElementType.AIR) {
+
 			Minecraft mc = Minecraft.getInstance();
 			final int screenHeight = mc.getMainWindow().getScaledHeight();
 //			final int screenWidth = mc.currentScreen.width;
 			ClientPlayerEntity player = mc.player;
-			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(spec -> {
-				if(spec.getMagicSpec() != null) {
+			player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
+				if(instance.getMagicSpec() != null) {
 					mc.getTextureManager().bindTexture(background);
 					this.blit(0, screenHeight - iconSize, 0, 0, iconSize, iconSize); //render background
-					int texYOffset = (spec.getMagicSpec().ordinal() + 1) * iconSize;
+					int texYOffset = (instance.getMagicSpec().ordinal() + 1) * iconSize;
 					this.blit(0, screenHeight - iconSize, 0, texYOffset, iconSize, iconSize); //render magic specialization icon
 					
 					//draw background, spec, and cooldown bars
-					for(int i = 0; i < spec.getSpells().length; i++) {
-						if(i != spec.getSelectedSpellIndex())
-							this.blit(((iconSize) * (i + 1)), screenHeight - iconSize, 0, 0, iconSize, iconSize);
-						else
-							this.blit(((iconSize) * (i + 1)), screenHeight - iconSize, iconSize, 0, iconSize, iconSize);
+					for(int i = 0; i < instance.getSpells().length; i++) {
+						if(i == instance.getSelectedSpellIndex())
+							this.blit(((iconSize) * (i + 1)), screenHeight - iconSize, 22, 22, iconSize, iconSize);
 						
 						int cdHeight = screenHeight - iconSize - texCDBarHeight;
-						int cd = spec.getCooldowns()[i];
-						if(spec.getSpells()[i] != null) {
+						int cd = instance.getCooldowns()[i];
+						if(instance.getSpells()[i] != null) {
 							if(cd > 0) {
-								float cdPercent = (float) (1.0 - ((float)cd / spec.getSpells()[i].getCooldown()));
+								float cdPercent = (float) (1.0 - ((float)cd / instance.getSpells()[i].getCooldown()));
 								int cdWidth = (int) (cdPercent * iconSize);
 								this.blit(((iconSize) * (i + 1)), cdHeight, 44, 0, cdWidth, texCDBarHeight);
 							} else {
@@ -51,22 +48,21 @@ public class CombatMagicGuiOverlay extends AbstractGui {
 							}
 						}
 					}
-					
+
 					//draw spell icons
-					for(int i = 0; i < spec.getSpells().length; i++) {
-						if(spec.getSpells()[i] != null) {
-							try {
-								if(mc.getResourceManager().getResource(spec.getSpells()[i].getIcon()) != null) {
-									mc.getTextureManager().bindTexture(spec.getSpells()[i].getIcon());
-								}
-							} catch (IOException e) {
+					for(int i = 0; i < instance.getSpells().length; i++) {
+						if(instance.getSpells()[i] != null) {
+							if(mc.getResourceManager().hasResource(instance.getSpells()[i].getIcon())) {
+								mc.getTextureManager().bindTexture(instance.getSpells()[i].getIcon());
+							} else {
 								mc.getTextureManager().bindTexture(missing);
 							}
-							this.blit(((iconSize) * (i + 1)), screenHeight - iconSize, 0, 0, iconSize, iconSize);
+							AbstractGui.blit(((iconSize) * (i + 1)), screenHeight - iconSize, 5, 0, 0, 22, 22, 22, 22);
 						}
 					}
 				}
 			});
+			mc.getTextureManager().bindTexture(this.GUI_ICONS_LOCATION);
 		}
 	}
 }

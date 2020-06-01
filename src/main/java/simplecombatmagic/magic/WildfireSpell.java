@@ -19,8 +19,8 @@ import simplecombatmagic.effect.MagicEffects;
 
 public class WildfireSpell extends MagicSpell {
 
-	public WildfireSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown) {
-		super(id, name, resource_name, spec, cooldown);
+	public WildfireSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown, boolean requiresTarget) {
+		super(id, name, resource_name, spec, cooldown, requiresTarget);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class WildfireSpell extends MagicSpell {
             }
          }
 		
-		BlockPos posStart = player.getPosition().add(-size, -size, -size);
-		BlockPos posEnd = player.getPosition().add(size, size, size);
+		BlockPos posStart = player.getPosition().add(-(size + 2), -(size + 2), -(size + 2));
+		BlockPos posEnd = player.getPosition().add(size + 2, size + 2, size + 2);
 		List<Entity> entities = world.getEntitiesWithinAABBExcludingEntity(player, new AxisAlignedBB(posStart, posEnd));
 		for(Entity entity : entities) {
 			if(entity instanceof LivingEntity) {

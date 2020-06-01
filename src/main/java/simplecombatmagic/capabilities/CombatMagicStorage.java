@@ -33,6 +33,7 @@ public class CombatMagicStorage implements IStorage<ICombatMagic> {
 		
 		if(instance.getMagicSpec() != null)
 			tag.putString("magicSpec", instance.getMagicSpec().getName());
+		
 		return tag;
 	}
 
@@ -47,7 +48,7 @@ public class CombatMagicStorage implements IStorage<ICombatMagic> {
 		//LOAD SPELL LIST
 		MagicSpell[] spells = MagicSpells.IDtoSpell(tag.getIntArray("spells"));
 		for(int i = 0; i < spells.length; i++) {
-			instance.getSpells()[i] = spells[i];
+			instance.setSpellAtIndex(i, spells[i]);
 		}
 		
 		//SET SELECTED SPELL
@@ -58,6 +59,7 @@ public class CombatMagicStorage implements IStorage<ICombatMagic> {
 		for(int i = 0; i < cooldowns.length; i++) {
 			instance.setCooldown(i, cooldowns[i]);
 		}
+		
 		//SET SPEC
 		instance.setMagicSpec(MagicSpecializationEnum.fromString(tag.getString("magicSpec")));
 	}

@@ -52,6 +52,7 @@ public class MagicCapabilityNetwork {
 		
 		if(instance.getMagicSpec() != null)
 			tag.putString("magicSpec", instance.getMagicSpec().getName());
+
 		MagicCapabilityPacket packet = new MagicCapabilityPacket(tag);
 		return packet;
 	}

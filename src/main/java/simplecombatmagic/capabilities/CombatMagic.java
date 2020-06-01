@@ -14,6 +14,7 @@ public class CombatMagic implements ICombatMagic {
 	private int[] cooldowns = new int[4];
 	private MagicSpecializationEnum spec = null;
 	private int selectedSpellIndex = 0;
+	private int target = 0;
 	
 	public static final ResourceLocation COMBAT_MAGIC_RESOURCE = new ResourceLocation(SimpleCombatMagic.MOD_ID, "combat_magic");
 

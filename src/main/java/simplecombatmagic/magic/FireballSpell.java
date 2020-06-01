@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 
 public class FireballSpell extends MagicSpell {
 
-	public FireballSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown) {
-		super(id, name, resource_name, spec, cooldown);
+	public FireballSpell(int id, String name, String resource_name, MagicSpecializationEnum spec, int cooldown, boolean requiresTarget) {
+		super(id, name, resource_name, spec, cooldown, requiresTarget);
 	}
 
 	@Override
