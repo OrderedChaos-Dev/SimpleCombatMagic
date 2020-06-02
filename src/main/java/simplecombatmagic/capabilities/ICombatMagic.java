@@ -10,6 +10,7 @@ public interface ICombatMagic {
 	void addSpell(MagicSpell spell);
 	void setSpellAtIndex(int index, MagicSpell spell);
 	MagicSpell[] getSpells();
+	MagicSpell getSelectedSpell();
 	int getSelectedSpellIndex();
 	void setSelectedSpellIndex(int index);
 	void cycleSpellIndex();

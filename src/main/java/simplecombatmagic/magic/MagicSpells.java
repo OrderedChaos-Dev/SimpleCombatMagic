@@ -15,6 +15,7 @@ public class MagicSpells {
 	public static final MagicSpell WILDFIRE = registerSpell(new WildfireSpell(spell_id++, "Wildfire", "wildfire", MagicSpecializationEnum.FIRE, 3600, false));
 	public static final MagicSpell SHARP_THORNS = registerSpell(new SharpThornsSpell(spell_id++, "Sharp Thorns", "sharp_thorns", MagicSpecializationEnum.NATURE, 600, false));
 	public static final MagicSpell TRANSFUSION = registerSpell(new TransfusionSpell(spell_id++, "Transfusion", "transfusion", MagicSpecializationEnum.BLOOD, 20, true)); //600
+	public static final MagicSpell GLACIAL_BURST = registerSpell(new GlacialBurstSpell(spell_id++, "Glacial Burst", "glacial_burst", MagicSpecializationEnum.FROST, 20, false));
 	
 	/**
 	 * takes array of spell ids, returns array of spells with those ids in the same order

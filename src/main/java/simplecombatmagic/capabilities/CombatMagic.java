@@ -38,6 +38,11 @@ public class CombatMagic implements ICombatMagic {
 	public MagicSpell[] getSpells() {
 		return this.spells;
 	}
+	
+	@Override
+	public MagicSpell getSelectedSpell() {
+		return this.spells[this.selectedSpellIndex];
+	}
 
 	@Override
 	public int getSelectedSpellIndex() {

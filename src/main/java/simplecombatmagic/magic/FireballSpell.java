@@ -22,7 +22,7 @@ public class FireballSpell extends MagicSpell {
 	}
 
 	@Override
-	public void cast(PlayerEntity player) {
+	public boolean cast(PlayerEntity player) {
 		World world = player.getEntityWorld();
 		Vec3d vec = player.getLook(1.0F);
 		BlockPos pos = player.getPosition();
@@ -65,10 +65,11 @@ public class FireballSpell extends MagicSpell {
         fireball.shootingEntity = player;
         world.addEntity(fireball);
         world.playSound(player, player.getPosition(), SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 0.5F, world.rand.nextFloat() * 0.15F + 0.6F);
+        return true;
 	}
 
 	@Override
 	public String setDescription() {
-		return "Hurls a ball of fire at the target, damaging it and setting it ablaze.";
+		return "Hurls a ball of fire at the direction you are facing.";
 	}
 }

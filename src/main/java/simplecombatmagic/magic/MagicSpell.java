@@ -22,7 +22,7 @@ public abstract class MagicSpell {
 		this.icon = new ResourceLocation(SimpleCombatMagic.MOD_ID, "textures/spells/" + resource_name + ".png");
 	}
 	
-	public abstract void cast(PlayerEntity player);
+	public abstract boolean cast(PlayerEntity player);
 	public abstract String setDescription();
 	
 	public int getCooldown() {

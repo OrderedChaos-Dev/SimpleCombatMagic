@@ -17,6 +17,7 @@ import simplecombatmagic.capabilities.ICombatMagic;
 import simplecombatmagic.client.CombatMagicGuiOverlay;
 import simplecombatmagic.effect.MagicEffectEvents;
 import simplecombatmagic.network.MagicCapabilityNetwork;
+import simplecombatmagic.particle.MagicParticleEvents;
 
 @Mod("simplecombatmagic")
 public class SimpleCombatMagic
@@ -33,6 +34,7 @@ public class SimpleCombatMagic
 
         MinecraftForge.EVENT_BUS.register(new MagicSyncEventsHandler()); //handles syncing from server to client
         MinecraftForge.EVENT_BUS.register(new MagicEffectEvents()); //handles effects
+        MinecraftForge.EVENT_BUS.register(new MagicParticleEvents()); //handles particle spawning
         MinecraftForge.EVENT_BUS.register(new CombatMagicGuiOverlay()); //renders gui for client on screen
     }
 

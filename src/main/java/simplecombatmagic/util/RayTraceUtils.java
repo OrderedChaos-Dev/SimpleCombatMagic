@@ -1,6 +1,5 @@
 package simplecombatmagic.util;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -30,7 +29,6 @@ public class RayTraceUtils {
 	            }, d1);
 
 	            if (entityraytraceresult != null) {
-	               Entity entity1 = entityraytraceresult.getEntity();
 	               Vec3d vec3d3 = entityraytraceresult.getHitVec();
 	               double d2 = vec3d.squareDistanceTo(vec3d3);
 	               if (d2 < d1 || result == null) {

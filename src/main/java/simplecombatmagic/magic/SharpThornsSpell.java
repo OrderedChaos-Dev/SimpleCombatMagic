@@ -11,9 +11,10 @@ public class SharpThornsSpell extends MagicSpell {
 	}
 
 	@Override
-	public void cast(PlayerEntity player) {
+	public boolean cast(PlayerEntity player) {
 		EffectInstance effect = new EffectInstance(MagicEffects.SHARP_THORNS, 600, 2);
 		player.addPotionEffect(effect);
+		return true;
 	}
 
 	@Override

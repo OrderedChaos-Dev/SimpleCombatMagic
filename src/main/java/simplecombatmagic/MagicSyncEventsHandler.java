@@ -45,7 +45,9 @@ public class MagicSyncEventsHandler {
 				for(int i = 0; i < cooldowns.length; i++) {
 					if(spells[i] != null) {
 						if(cooldowns[i] == spells[i].getCooldown()) {
-							spells[i].cast(player);
+							if(!spells[i].cast(player)) {
+								instance.setCooldown(i, 0);
+							}
 						}
 					}
 				}
@@ -68,9 +70,14 @@ public class MagicSyncEventsHandler {
 				MagicSpecializationEnum m = MagicSpecializationEnum.cycle(instance.getMagicSpec());
 				instance.setMagicSpec(m);
 				instance.setSpellAtIndex(0, MagicSpells.FIREBALL);
-				instance.setSpellAtIndex(1, MagicSpells.SHARP_THORNS);
+				instance.setSpellAtIndex(1, MagicSpells.GLACIAL_BURST);
 				instance.setSpellAtIndex(2, MagicSpells.TRANSFUSION);
 				instance.setSpellAtIndex(3, MagicSpells.WILDFIRE);
+				instance.addSpell(MagicSpells.FIREBALL);
+				instance.addSpell(MagicSpells.TRANSFUSION);
+				instance.addSpell(MagicSpells.SHARP_THORNS);
+				instance.addSpell(MagicSpells.WILDFIRE);
+				instance.addSpell(MagicSpells.GLACIAL_BURST);
 				MagicCapabilityPacket packet = MagicCapabilityNetwork.createPacket(instance);
 				MagicCapabilityNetwork.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), packet);
 			});
