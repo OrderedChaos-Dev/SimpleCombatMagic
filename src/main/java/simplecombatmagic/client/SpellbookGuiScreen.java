@@ -2,6 +2,8 @@ package simplecombatmagic.client;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +28,9 @@ public class SpellbookGuiScreen extends Screen {
 			ArrayList<MagicSpell> spellbook = instance.getSpellbook();
 			int index = 0;
 			for(MagicSpell spell : spellbook) {
-				this.addButton(new SpellButton((this.width / 2 - 100) + (26 * index), this.height / 5, 22, 22, (button) -> {
+				int posX = (int)(((this.width / 2 - 100) + (33 * index)));
+				int posY = (int)((this.height / 5));
+				this.addButton(new SpellButton(posX, posY, 22, 22, (button) -> {
 					System.out.println(spell.getName());
 				}, spell.getIcon(), spell, this));
 				index++;
@@ -37,11 +41,13 @@ public class SpellbookGuiScreen extends Screen {
 	@Override
 	public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
 		this.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
+		GL11.glPushMatrix();
 		super.render(p_render_1_, p_render_2_, p_render_3_);
 		for(Widget widget : this.buttons) {
 			if(widget.isHovered())
 				widget.renderToolTip(widget.x + 25, widget.y + 5);
 		}
+		GL11.glPopMatrix();
 	}
 	
 	@Override

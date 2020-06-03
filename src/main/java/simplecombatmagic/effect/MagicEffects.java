@@ -3,7 +3,6 @@ package simplecombatmagic.effect;
 import java.util.ArrayList;
 
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;

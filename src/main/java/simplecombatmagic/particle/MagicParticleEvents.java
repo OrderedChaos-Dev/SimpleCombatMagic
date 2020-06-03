@@ -18,6 +18,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import simplecombatmagic.capabilities.CombatMagicInstance;
 import simplecombatmagic.effect.MagicEffects;
+import simplecombatmagic.magic.MagicSpell;
 import simplecombatmagic.util.RayTraceUtils;
 
 /**
@@ -35,16 +36,19 @@ public class MagicParticleEvents {
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if(player != null) {
 				player.getCapability(CombatMagicInstance.COMBAT_MAGIC).ifPresent(instance -> {
-					if(instance.getSpells()[instance.getSelectedSpellIndex()].requiresTarget()) {
-						EntityRayTraceResult result = RayTraceUtils.getMouseOverEntityInRange(player, 15.0);
-						if(result != null) {
-							Entity entity = result.getEntity();
-							if(entity instanceof LivingEntity) {
-								if(entity.getEntityWorld().getGameTime() % 5 == 0) {
-									double x = entity.getPosX() + 0.7 * (rand.nextFloat() - rand.nextFloat());
-									double y = entity.getPosY() + entity.getHeight() + 0.5;
-									double z = entity.getPosZ() + 0.7 * (rand.nextFloat() - rand.nextFloat());
-									addParticle(instance.getSelectedSpell().getTargetParticle(), x, y, z, 0, 0, 0);
+					MagicSpell spell = instance.getSpells()[instance.getSelectedSpellIndex()];
+					if(spell != null) {
+						if(spell.requiresTarget()) {
+							EntityRayTraceResult result = RayTraceUtils.getMouseOverEntityInRange(player, 15.0);
+							if(result != null) {
+								Entity entity = result.getEntity();
+								if(entity instanceof LivingEntity) {
+									if(entity.getEntityWorld().getGameTime() % 5 == 0) {
+										double x = entity.getPosX() + 0.7 * (rand.nextFloat() - rand.nextFloat());
+										double y = entity.getPosY() + entity.getHeight() + 0.5;
+										double z = entity.getPosZ() + 0.7 * (rand.nextFloat() - rand.nextFloat());
+										addParticle(instance.getSelectedSpell().getTargetParticle(), x, y, z, 0, 0, 0);
+									}
 								}
 							}
 						}

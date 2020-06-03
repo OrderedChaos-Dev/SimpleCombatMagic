@@ -19,7 +19,7 @@ public class SpellButton extends Button {
 
 	private final ResourceLocation background = new ResourceLocation(SimpleCombatMagic.MOD_ID, "textures/gui/overlay.png");
 	private final ResourceLocation sprite;
-	private final int iconSize = 22;
+	private final int iconSize = 32;
 	private MagicSpell spell;
 	private Screen parent;
 	
@@ -35,14 +35,19 @@ public class SpellButton extends Button {
 		Minecraft minecraft = Minecraft.getInstance();
 
 		GL11.glPushMatrix();
+		GL11.glTranslated(this.x * 0.3, this.y * 0.3, 0);
+		GL11.glScaled(0.7, 0.7, 0.7);
 		RenderSystem.disableDepthTest();
 		minecraft.getTextureManager().bindTexture(sprite);
-		AbstractGui.blit(this.x, this.y, 0, 0, 0, iconSize, iconSize, iconSize, iconSize);
+		AbstractGui.blit(this.x, this.y, 4, 0, 0, iconSize, iconSize, iconSize, iconSize);
 
+		minecraft.getTextureManager().bindTexture(background);
 		if (this.isHovered()) {
-			minecraft.getTextureManager().bindTexture(background);
-			this.blit(this.x, this.y, 22, 22, iconSize, iconSize);
+			AbstractGui.blit(this.x, this.y, 50, iconSize, 0, iconSize, iconSize, 256, 256);
+		} else {
+			AbstractGui.blit(this.x, this.y, 50, 0, 0, iconSize, iconSize, 256, 256);
 		}
+		
 		RenderSystem.enableDepthTest();
 		GL11.glPopMatrix();
 	}
